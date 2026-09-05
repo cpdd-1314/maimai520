@@ -1,0 +1,42 @@
+databases: []
+services:
+  - type: web
+    name: wxshop
+    runtime: node
+    # 注意：Render 免费版（free）不支持持久磁盘，订单/商品/图片会在重启或休眠时丢失。
+    # 如需数据持久 + 不休眠，请使用 starter（约 $7/月）；仅演示可改成 free 并删掉下面的 disk 段。
+    plan: starter
+    branch: main
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATA_DIR
+        value: /data
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        sync: false # 首次启动用它创建管理员，登录后请立即修改
+      - key: STORE_NAME
+        value: 我的小店
+      # 微信支付官方 API（仅「官方 API」模式需要；「个人收款码」模式无需填写）
+      - key: WX_APPID
+        sync: false
+      - key: WX_MCHID
+        sync: false
+      - key: WX_APIV3_KEY
+        sync: false
+      - key: WX_SERIAL_NO
+        sync: false
+      - key: WX_PRIVATE_KEY
+        sync: false # apiclient_key.pem 内容，多行用 \n 连接
+      - key: WX_NOTIFY_URL
+        sync: false # 形如 https://<你的服务名>.onrender.com/pay/notify
+    disk:
+      name: wxshop-data
+      mountPath: /data
+      sizeGB: 1
