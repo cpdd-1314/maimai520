@@ -1,0 +1,46 @@
+<%- include('../partials/admin_head', { title }) %>
+<h1 class="page-title">商品管理</h1>
+<% if (typeof error !== 'undefined' && error) { %><p class="warn"><%= error %></p><% } %>
+
+<section class="panel">
+  <h2>添加商品</h2>
+  <form method="POST" action="/admin/products" enctype="multipart/form-data" class="grid-form">
+    <label>名称<input type="text" name="name" required maxlength="100"></label>
+    <label>价格（元）<input type="number" step="0.01" name="price" required min="0"></label>
+    <label>库存（留空表示不限）<input type="number" name="stock" min="0" placeholder="不限"></label>
+    <label>排序（大靠前）<input type="number" name="sort" value="0"></label>
+    <label>状态
+      <select name="status"><option value="on">在售</option><option value="off">下架</option></select>
+    </label>
+    <label>图片<input type="file" name="image" accept="image/*"></label>
+    <label class="full">描述<textarea name="description" rows="3" maxlength="2000"></textarea></label>
+    <button class="btn" type="submit">添加</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>商品列表</h2>
+  <% if (!products.length) { %><p class="empty">还没有商品。</p><% } else { %>
+  <table class="tbl">
+    <thead><tr><th>图片</th><th>名称</th><th>价格</th><th>库存</th><th>状态</th><th>操作</th></tr></thead>
+    <tbody>
+      <% products.forEach(function (p) { %>
+        <tr>
+          <td><% if (p.image) { %><img class="thumb" src="<%= p.image %>"><% } else { %><span class="muted">无</span><% } %></td>
+          <td><%= p.name %></td>
+          <td>¥<%= formatYuan(p.price) %></td>
+          <td><%= p.stock == null ? '不限' : p.stock %></td>
+          <td><span class="badge b-<%= p.status %>"><%= p.status === 'on' ? '在售' : '下架' %></span></td>
+          <td>
+            <a class="btn small" href="/admin/products/<%= p.id %>/edit">编辑</a>
+            <form method="POST" action="/admin/products/<%= p.id %>/delete" class="inline" onsubmit="return confirm('确定删除？');">
+              <button class="btn small danger" type="submit">删除</button>
+            </form>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+  <% } %>
+</section>
+<%- include('../partials/admin_foot') %>

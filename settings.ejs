@@ -1,0 +1,66 @@
+<%- include('../partials/admin_head', { title }) %>
+<h1 class="page-title">设置</h1>
+<% if (must) { %><p class="warn">首次登录，请修改密码后再使用。</p><% } %>
+<% if (error) { %><p class="warn"><%= error %></p><% } %>
+<% if (success) { %><p class="ok"><%= success %></p><% } %>
+
+<section class="panel">
+  <h2>收款方式</h2>
+  <form method="POST" action="/admin/settings" enctype="multipart/form-data" class="grid-form">
+    <input type="hidden" name="storeName" value="<%= store.storeName %>">
+    <input type="hidden" name="storeNotice" value="<%= store.storeNotice %>">
+
+    <label class="full">收款模式
+      <select name="payMode">
+        <option value="personal" <%= store.payMode === 'personal' ? 'selected' : '' %>>个人收款码（上传我的微信收款码，买家传支付截图，我手动确认）</option>
+        <option value="official" <%= store.payMode === 'official' ? 'selected' : '' %>>微信支付官方 API（自动出动态二维码 + 回调自动确认，需商户号）</option>
+      </select>
+    </label>
+
+    <% if (store.payMode === 'personal') { %>
+      <label class="full">我的微信收款码图片
+        <% if (store.qrImage) { %>
+          <div class="qr-preview"><img src="<%= store.qrImage %>" alt="收款码"></div>
+        <% } else { %>
+          <span class="muted">尚未上传，买家将无法付款</span>
+        <% } %>
+        <input type="file" name="qrImage" accept="image/*">
+      </label>
+      <% if (store.qrImage) { %>
+        <label class="full chk"><input type="checkbox" name="removeQrImage" value="1"> 移除当前收款码</label>
+      <% } %>
+      <p class="muted full">买家下单后会看到这个收款码，付款后上传截图；你在「订单管理」里核对并点「确认收款」。</p>
+    <% } else { %>
+      <p class="muted full">
+        官方 API 参数（appid / 商户号 / APIv3 密钥 / 证书序列号 / 商户私钥 / 回调地址）请在部署环境的<strong>环境变量</strong>中配置（WX_* 开头），不写入数据库。
+        当前状态：<%= wechatConfigured ? '✅ 已配置' : '⚠️ 未配置（买家将无法付款，可切换为「个人收款码」模式）' %>。
+      </p>
+    <% } %>
+
+    <button class="btn" type="submit">保存收款设置</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>店铺信息</h2>
+  <form method="POST" action="/admin/settings" class="grid-form">
+    <input type="hidden" name="payMode" value="<%= store.payMode %>">
+    <label>店铺名称<input type="text" name="storeName" maxlength="50" value="<%= store.storeName %>"></label>
+    <label class="full">店铺公告<textarea name="storeNotice" rows="2" maxlength="500"><%= store.storeNotice %></textarea></label>
+    <button class="btn" type="submit">保存店铺信息</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>修改密码</h2>
+  <form method="POST" action="/admin/settings" class="grid-form">
+    <input type="hidden" name="payMode" value="<%= store.payMode %>">
+    <input type="hidden" name="storeName" value="<%= store.storeName %>">
+    <input type="hidden" name="storeNotice" value="<%= store.storeNotice %>">
+    <label>原密码<input type="password" name="oldPassword"></label>
+    <label>新密码<input type="password" name="newPassword" placeholder="至少 6 位"></label>
+    <label>确认新密码<input type="password" name="confirmPassword"></label>
+    <button class="btn" type="submit">修改密码</button>
+  </form>
+</section>
+<%- include('../partials/admin_foot') %>

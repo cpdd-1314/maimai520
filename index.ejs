@@ -1,0 +1,21 @@
+<%- include('../partials/shop_head', { title, store }) %>
+<div class="container">
+  <h1 class="page-title"><%= store.storeName %></h1>
+  <% if (store.storeNotice) { %><p class="notice"><%= store.storeNotice %></p><% } %>
+  <div class="grid">
+    <% products.forEach(function (p) { %>
+      <div class="card">
+        <a href="/product/<%= p.id %>">
+          <% if (p.image) { %><img src="<%= p.image %>" alt="<%= p.name %>"><% } else { %><div class="noimg">暂无图片</div><% } %>
+        </a>
+        <div class="card-body">
+          <h3><a href="/product/<%= p.id %>"><%= p.name %></a></h3>
+          <p class="price">¥<%= formatYuan(p.price) %></p>
+          <a class="btn" href="/product/<%= p.id %>">查看 / 购买</a>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+  <% if (!products.length) { %><p class="empty">暂无商品，敬请期待。</p><% } %>
+</div>
+<%- include('../partials/shop_foot') %>

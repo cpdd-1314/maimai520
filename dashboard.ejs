@@ -1,0 +1,38 @@
+<%- include('../partials/admin_head', { title }) %>
+<h1 class="page-title">仪表盘</h1>
+
+<% if (typeof missingQr !== 'undefined' && missingQr) { %>
+  <p class="warn warn-block">⚠️ 你还没有上传收款码，买家下单后将无法付款。请立即到<a href="/admin/settings"><b>设置</b></a>上传你的微信收款码。</p>
+<% } %>
+
+<div class="stat-cards">
+  <div class="stat"><div class="num"><%= stats.total %></div><div class="lab">总订单</div></div>
+  <div class="stat"><div class="num"><%= stats.paid %></div><div class="lab">已付款</div></div>
+  <div class="stat"><div class="num"><%= stats.pending %></div><div class="lab">待支付</div></div>
+  <div class="stat"><div class="num"><%= stats.submitted %></div><div class="lab">待确认收款</div></div>
+  <div class="stat"><div class="num">¥<%= formatYuan(stats.revenue) %></div><div class="lab">已收款</div></div>
+</div>
+
+<% if (stats.submitted > 0) { %><p class="warn">有 <b><%= stats.submitted %></b> 笔订单已上传支付截图，等待你<a href="/admin/orders">确认收款</a>。</p><% } %>
+<p class="muted">在售商品：<%= productCount %> 件</p>
+
+<h2>最近订单</h2>
+<% if (!recentOrders.length) { %><p class="empty">暂无订单。</p><% } else { %>
+<table class="tbl">
+  <thead><tr><th>订单号</th><th>商品</th><th>金额</th><th>买家</th><th>状态</th><th>时间</th></tr></thead>
+  <tbody>
+    <% recentOrders.forEach(function (o) { %>
+      <tr>
+        <td><%= o.outTradeNo %></td>
+        <td><%= o.productName %> ×<%= o.quantity %></td>
+        <td>¥<%= formatYuan(o.amount) %></td>
+        <td><%= o.buyerName %><br><span class="muted"><%= o.buyerContact %></span></td>
+        <td><span class="badge b-<%= o.status %>"><%= statusText(o.status) %></span></td>
+        <td class="muted"><%= formatTime(o.createdAt) %></td>
+      </tr>
+    <% }); %>
+  </tbody>
+</table>
+<a class="btn" href="/admin/orders">查看全部订单</a>
+<% } %>
+<%- include('../partials/admin_foot') %>

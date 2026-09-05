@@ -1,0 +1,43 @@
+<%- include('../partials/admin_head', { title }) %>
+<h1 class="page-title">订单管理</h1>
+<% if (!orders.length) { %><p class="empty">暂无订单。</p><% } else { %>
+<table class="tbl">
+  <thead><tr><th>订单号</th><th>商品</th><th>金额</th><th>买家</th><th>支付凭证</th><th>状态</th><th>下单时间</th><th>操作</th></tr></thead>
+  <tbody>
+    <% orders.forEach(function (o) { %>
+      <tr>
+        <td><%= o.outTradeNo %></td>
+        <td><%= o.productName %> ×<%= o.quantity %></td>
+        <td>¥<%= formatYuan(o.amount) %></td>
+        <td><%= o.buyerName %><br><span class="muted"><%= o.buyerContact %></span></td>
+        <td>
+          <% if (o.proofImage) { %>
+            <a href="<%= o.proofImage %>" target="_blank"><img class="thumb" src="<%= o.proofImage %>" alt="支付截图"></a>
+          <% } else { %>
+            <span class="muted"><%= o.payMode === 'personal' ? '未上传' : '官方回调' %></span>
+          <% } %>
+        </td>
+        <td><span class="badge b-<%= o.status %>"><%= statusText(o.status) %></span></td>
+        <td class="muted"><%= formatTime(o.createdAt) %></td>
+        <td>
+          <% if (o.status === 'submitted') { %>
+            <form method="POST" action="/admin/orders/<%= o.id %>/confirm" class="inline">
+              <button class="btn small" type="submit">确认收款</button>
+            </form>
+          <% } %>
+          <form method="POST" action="/admin/orders/<%= o.id %>/status" class="inline">
+            <select name="status" onchange="this.form.submit()">
+              <option value="pending" <%= o.status==='pending'?'selected':'' %>>待支付</option>
+              <option value="submitted" <%= o.status==='submitted'?'selected':'' %>>待确认收款</option>
+              <option value="paid" <%= o.status==='paid'?'selected':'' %>>已付款</option>
+              <option value="completed" <%= o.status==='completed'?'selected':'' %>>已完成</option>
+              <option value="cancelled" <%= o.status==='cancelled'?'selected':'' %>>已取消</option>
+            </select>
+          </form>
+        </td>
+      </tr>
+    <% }); %>
+  </tbody>
+</table>
+<% } %>
+<%- include('../partials/admin_foot') %>

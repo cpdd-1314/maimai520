@@ -1,0 +1,46 @@
+<%- include('../partials/shop_head', { title: '扫码付款', store: settings }) %>
+<div class="container pay">
+  <h1 class="page-title">扫码付款</h1>
+
+  <div class="order-box">
+    <p>商品：<b><%= order.productName %></b> ×<%= order.quantity %></p>
+    <p class="price big">应付：¥<%= formatYuan(order.amount) %></p>
+    <p class="muted">订单号：<%= order.outTradeNo %></p>
+  </div>
+
+  <% if (message) { %><p class="warn"><%= message %></p><% } %>
+
+  <% if (submitted) { %>
+    <div class="waiting">
+      <p class="ok">✅ 支付截图已提交，等待商家确认收款。</p>
+      <p class="hint">商家确认后本页会自动跳转，请留意你填写的联系方式。</p>
+    </div>
+    <script>
+      (function () {
+        var no = '<%= order.outTradeNo %>';
+        var timer = setInterval(function () {
+          fetch('/api/order/' + no + '/status')
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+              if (d && d.paid) { clearInterval(timer); location.reload(); }
+            })
+            .catch(function () {});
+        }, 3000);
+      })();
+    </script>
+  <% } else if (qrImage) { %>
+    <div class="qr"><img src="<%= qrImage %>" alt="商家收款码"></div>
+    <p class="hint">请用微信「扫一扫」向商家付款 <b>¥<%= formatYuan(order.amount) %></b>，付款后上传截图。</p>
+
+    <% if (error) { %><p class="warn"><%= error %></p><% } %>
+
+    <form method="POST" action="/pay/<%= order.outTradeNo %>/proof" enctype="multipart/form-data" class="proof-form">
+      <label>上传支付截图（必填）
+        <input type="file" name="proof" accept="image/*" required>
+      </label>
+      <button class="btn" type="submit">提交截图</button>
+    </form>
+    <p class="tip">截图用于商家核对收款，请包含金额与付款时间。</p>
+  <% } %>
+</div>
+<%- include('../partials/shop_foot') %>

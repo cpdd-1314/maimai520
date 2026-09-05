@@ -1,0 +1,12 @@
+<%- include('../partials/shop_head', { title: '支付成功', store: settings }) %>
+<div class="container pay success">
+  <h1 class="page-title">✅ 支付成功</h1>
+  <div class="order-box">
+    <p>商品：<b><%= order.productName %></b> ×<%= order.quantity %></p>
+    <p>金额：¥<%= formatYuan(order.amount) %></p>
+    <p>状态：<b><%= statusText(order.status) %></b></p>
+  </div>
+  <p class="hint">我们会通过你填写的联系方式与你确认，请留意微信/手机消息。</p>
+  <a class="btn" href="/">返回首页</a>
+</div>
+<%- include('../partials/shop_foot') %>

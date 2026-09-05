@@ -1,0 +1,24 @@
+<%- include('../partials/shop_head', { title, store }) %>
+<div class="container product-detail">
+  <a class="back" href="/">← 返回商品列表</a>
+  <div class="pd">
+    <div class="pd-img">
+      <% if (product.image) { %><img src="<%= product.image %>" alt="<%= product.name %>"><% } else { %><div class="noimg big">暂无图片</div><% } %>
+    </div>
+    <div class="pd-info">
+      <h1><%= product.name %></h1>
+      <p class="price big">¥<%= formatYuan(product.price) %></p>
+      <% if (product.stock != null) { %><p class="stock">库存：<%= product.stock %></p><% } %>
+      <% if (product.description) { %><p class="desc"><%= product.description %></p><% } %>
+      <form method="POST" action="/order" class="buy-form">
+        <input type="hidden" name="productId" value="<%= product.id %>">
+        <label>姓名<input type="text" name="buyerName" required maxlength="50" placeholder="收货人/联系人姓名"></label>
+        <label>联系方式（微信或手机）<input type="text" name="buyerContact" required maxlength="100" placeholder="方便我们联系你"></label>
+        <label>数量<input type="number" name="quantity" value="1" min="1" max="<%= product.stock || 99 %>"></label>
+        <button class="btn" type="submit">提交订单并支付</button>
+      </form>
+      <p class="tip">虚拟商品 / 到店自取，无需填写收货地址。</p>
+    </div>
+  </div>
+</div>
+<%- include('../partials/shop_foot') %>

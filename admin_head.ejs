@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title %> - 管理后台</title>
+  <link rel="stylesheet" href="/public/css/style.css">
+</head>
+<body>
+  <header class="adminbar">
+    <div class="container adminnav">
+      <span class="brand">管理后台</span>
+      <nav>
+        <a href="/admin">仪表盘</a>
+        <a href="/admin/products">商品</a>
+        <a href="/admin/orders">订单</a>
+        <a href="/admin/settings">设置</a>
+        <form method="POST" action="/admin/logout" class="logout-form"><button class="link" type="submit">退出登录</button></form>
+      </nav>
+    </div>
+  </header>
+  <main class="container admin">
